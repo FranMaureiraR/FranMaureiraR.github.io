@@ -206,14 +206,15 @@
 .gate { max-width: 520px; margin: 0 auto; padding: 180px 24px 120px; text-align: center; }
 .gate h1 { font-size: clamp(30px, 4.6vw, 42px); font-weight: 600; letter-spacing: -.02em; line-height: 1.12; margin: 14px 0 14px; color: var(--ink); }
 .gate-sub { font-size: 17px; color: var(--muted); }
-#gate { margin-top: 36px; text-align: left; }
+#gate { max-width: 380px; margin: 32px auto 0; text-align: left; }
 #gate label { font-size: 13px; font-weight: 600; color: var(--ink); }
-.gate-row { display: flex; gap: 10px; margin-top: 8px; }
-.gate-row input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 12px 16px; border: 1px solid #8a8a8a; border-radius: 999px; background: #fff; color: var(--ink); }
+.gate-row { display: flex; gap: 8px; margin-top: 6px; }
+.gate-row input, .gate-row button { line-height: 1.2; height: 38px; }
+.gate-row input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 8px 14px; border: 1px solid #8a8a8a; border-radius: 999px; background: #fff; color: var(--ink); }
 .gate-row input:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
-.gate-row button { font: inherit; font-size: 15px; font-weight: 600; padding: 12px 20px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; cursor: pointer; }
+.gate-row button { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 18px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; cursor: pointer; }
 .gate-err { min-height: 22px; margin-top: 10px; font-size: 14px; color: #b3261e; }
-@media (max-width: 480px) { .gate { padding-top: 130px; } .gate-row { flex-direction: column; } }
+@media (max-width: 480px) { .gate { padding-top: 130px; } }
 .cs-stats .tbd { display: inline-block; margin-top: 0; font-size: 14px; }
 .cs-stats strong .tbd { font-size: 22px; }
 
