@@ -1,0 +1,256 @@
+// ===== Scroll suave (Lenis) =====
+// Si la librería no carga o la persona prefiere menos movimiento, se usa el scroll normal.
+let lenis = null;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (window.Lenis && !reduceMotion) {
+  lenis = new window.Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+  document.documentElement.style.scrollBehavior = 'auto';
+  const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+}
+const smoothTo = (target) => {
+  if (lenis) lenis.scrollTo(target, { duration: 1.4 });
+  else if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' });
+  else target.scrollIntoView({ behavior: 'smooth' });
+};
+
+// Enlaces dentro de la misma página (#work, #contact, índice lateral) con el mismo scroll suave
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = document.querySelector(link.getAttribute('href'));
+  if (!target) return;
+  e.preventDefault();
+  smoothTo(target);
+  history.replaceState(null, '', link.getAttribute('href'));
+});
+
+// ===== Aparece suavemente cada bloque al entrar en pantalla =====
+const pending = new Set(document.querySelectorAll('.reveal'));
+function revealVisible() {
+  const limit = window.innerHeight * 0.92;
+  pending.forEach((el) => {
+    if (el.getBoundingClientRect().top < limit) {
+      el.classList.add('in');
+      pending.delete(el);
+    }
+  });
+}
+window.addEventListener('scroll', revealVisible, { passive: true });
+window.addEventListener('resize', revealVisible);
+window.addEventListener('load', revealVisible);
+revealVisible();
+
+// ===== Botón "volver arriba" =====
+const toTop = document.querySelector('.to-top');
+if (toTop) {
+  const toggle = () => toTop.classList.toggle('show', window.scrollY > 600);
+  window.addEventListener('scroll', toggle, { passive: true });
+  toggle();
+  toTop.addEventListener('click', () => smoothTo(0));
+}
+
+// ===== Índice lateral en las páginas de caso =====
+const sections = [...document.querySelectorAll('.cs-sec[id]')];
+if (sections.length) {
+  const nav = document.createElement('nav');
+  nav.className = 'cs-toc';
+  nav.setAttribute('aria-label', 'On this page');
+  nav.innerHTML = '<ul>' + sections.map((s) =>
+    `<li><a href="#${s.id}"><span>${s.querySelector('h2').textContent}</span></a></li>`).join('') + '</ul>';
+  document.body.appendChild(nav);
+  const links = [...nav.querySelectorAll('a')];
+  const mark = () => {
+    let current = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top < window.innerHeight * 0.4) current = i; });
+    links.forEach((a, i) => a.classList.toggle('active', i === current));
+  };
+  window.addEventListener('scroll', mark, { passive: true });
+  mark();
+}
+
+// ===== Featured work: el scroll vertical mueve los proyectos hacia el lado (solo en computador) =====
+const work = document.querySelector('.featured');
+const track = document.querySelector('.g-track');
+if (work && track) {
+  const desktop = window.matchMedia('(min-width: 801px)');
+  const buttons = document.querySelectorAll('.gallery-arrows button');
+  const PACE = 1.6; // cuánto scroll vertical hace falta por cada píxel horizontal (más alto = más lento)
+  let distance = 0; // recorrido horizontal
+
+  const layout = () => {
+    if (desktop.matches) {
+      distance = Math.max(0, track.scrollWidth - window.innerWidth);
+      work.style.height = `${window.innerHeight + distance * PACE}px`;
+    } else {
+      distance = 0;
+      work.style.height = '';
+      track.style.transform = '';
+    }
+    move();
+  };
+
+  const progress = () => Math.min(distance, Math.max(0, (window.scrollY - work.offsetTop) / PACE));
+
+  const move = () => {
+    if (!desktop.matches) return;
+    const p = progress();
+    track.style.transform = `translate3d(${-p}px, 0, 0)`;
+    if (buttons.length) {
+      buttons[0].disabled = p <= 2;
+      buttons[1].disabled = p >= distance - 2;
+    }
+  };
+
+  // Las flechas avanzan un proyecto moviendo el scroll de la página
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    const step = track.querySelector('.g-item').getBoundingClientRect().width + 28;
+    const target = Math.min(distance, Math.max(0, progress() + step * Number(b.dataset.dir)));
+    smoothTo(work.offsetTop + target * PACE);
+  }));
+
+  window.addEventListener('scroll', move, { passive: true });
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  desktop.addEventListener('change', layout);
+  layout();
+}
+
+// ===== Componentes del mosaico (Mis Stocks y Saldos Bci) =====
+// Escala cada componente para que quepa en su cuadro, manteniendo su diseño original.
+const fits = [...document.querySelectorAll('.fit')];
+const fitAll = () => {
+  const scales = fits.map((el) => {
+    const box = el.parentElement;
+    return Math.min(1, (box.clientWidth * 0.86) / el.offsetWidth, (box.clientHeight * 0.76) / el.offsetHeight);
+  });
+  // En computador ambos usan la misma escala para que se vean del mismo tamaño
+  const shared = window.innerWidth > 800 ? Math.min(...scales) : null;
+  fits.forEach((el, i) => {
+    el.style.setProperty('--s', shared ?? scales[i]);
+    el.style.margin = `${-el.offsetHeight / 2}px 0 0 ${-el.offsetWidth / 2}px`; // centrado exacto
+  });
+};
+if (fits.length) {
+  new ResizeObserver(fitAll).observe(document.querySelector('.mosaic'));
+  document.fonts?.ready.then(fitAll);
+  fitAll();
+}
+
+const fmt = (n, dec = 0) => n.toLocaleString('es-CL', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const countTo = (el, from, to, { dec = 0, prefix = '', ms = 900 } = {}) => {
+  const t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = prefix + fmt(from + (to - from) * e, dec);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+};
+
+const rs = document.querySelector('.rs');
+if (rs && !reduceMotion) {
+  const val = rs.querySelector('.rs-val'), diff = rs.querySelector('.rs-diff');
+  const states = [[325230, -25371], [341870, 16640], [333512, 8282], [318904, -6326]];
+  let i = 0;
+  setInterval(() => {
+    const from = states[i][0]; i = (i + 1) % states.length; const [v, d] = states[i];
+    countTo(val, from, v, { prefix: '$' });
+    diff.textContent = (d < 0 ? '-$' : '+$') + fmt(Math.abs(d));
+    diff.classList.toggle('up', d > 0);
+  }, 2600);
+}
+
+const bc = document.querySelector('.bc');
+if (bc && !reduceMotion) {
+  const tabs = [...bc.querySelectorAll('.bc-tabs span')], bar = bc.querySelector('.bc-bar');
+  const main = bc.querySelector('.bc-main'), book = bc.querySelector('.bc-book'), hold = bc.querySelector('.bc-hold');
+  const data = [
+    { cur: 'CLP', main: 12480320, book: 12530320, hold: 50000, dec: 0 },
+    { cur: 'USD', main: 8245.6, book: 8395.6, hold: 150, dec: 2 },
+    { cur: 'EUR', main: 3120.45, book: 3120.45, hold: 0, dec: 2 },
+  ];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % data.length; const d = data[i];
+    tabs.forEach((t, j) => t.classList.toggle('on', j === i));
+    bar.style.transform = `translateX(${i * 100}%)`;
+    bc.classList.add('swap');
+    setTimeout(() => {
+      bc.querySelectorAll('.bc-cur').forEach((c) => (c.textContent = d.cur));
+      book.textContent = fmt(d.book, d.dec); hold.textContent = fmt(d.hold, d.dec);
+      bc.classList.remove('swap');
+      countTo(main, d.main * 0.6, d.main, { dec: d.dec, ms: 800 });
+    }, 250);
+  }, 3000);
+}
+
+// ===== Slides del header de cada caso: si hay más de uno, rotan solos =====
+document.querySelectorAll('.cs-stage').forEach((stage) => {
+  const slides = [...stage.querySelectorAll('.stage-slide')];
+  if (slides.length < 2) return;
+  stage.classList.add('rotating');
+  const dots = document.createElement('div');
+  dots.className = 'stage-dots';
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', `Show slide ${i + 1}`);
+    b.addEventListener('click', () => { show(i); restart(); });
+    dots.appendChild(b);
+  });
+  stage.after(dots);
+  let cur = 0, timer;
+  const show = (i) => {
+    cur = i;
+    slides.forEach((s, j) => s.classList.toggle('on', j === i));
+    [...dots.children].forEach((d, j) => d.classList.toggle('on', j === i));
+  };
+  const restart = () => { clearInterval(timer); if (!reduceMotion) timer = setInterval(() => show((cur + 1) % slides.length), 4500); };
+  show(0); restart();
+});
+
+// ===== Idioma: botón EN/ES arriba a la derecha =====
+// Traduce cada texto buscando su versión en inglés en un diccionario:
+// window.I18N_ES (i18n-es.js, páginas públicas) + <script id="i18n-page"> (dentro de cada caso de Front, cifrado).
+(() => {
+  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a';
+  let dict = Object.assign({}, window.I18N_ES || {});
+  const own = document.getElementById('i18n-page');
+  if (own) { try { Object.assign(dict, JSON.parse(own.textContent)); } catch (e) {} }
+  const norm = (s) => s.replace(/\s+/g, ' ').trim();
+  const skip = (el) => el.closest('.mosaic, .tbd, script, .lang-toggle');
+  const attrs = ['alt', 'aria-label'];
+
+  const apply = (lang) => {
+    document.documentElement.lang = lang;
+    document.querySelectorAll(SEL).forEach((el) => {
+      if (skip(el)) return;
+      if (lang === 'es') {
+        const es = dict[norm(el.dataset.en ?? el.innerHTML)];
+        if (es && el.dataset.en == null) { el.dataset.en = el.innerHTML; el.innerHTML = es; }
+      } else if (el.dataset.en != null) { el.innerHTML = el.dataset.en; delete el.dataset.en; }
+    });
+    attrs.forEach((a) => document.querySelectorAll(`[${a}]`).forEach((el) => {
+      if (el.closest('.lang-toggle')) return;
+      const k = `en${a === 'alt' ? 'Alt' : 'Aria'}`;
+      if (lang === 'es') { const es = dict[norm(el.getAttribute(a))]; if (es && el.dataset[k] == null) { el.dataset[k] = el.getAttribute(a); el.setAttribute(a, es); } }
+      else if (el.dataset[k] != null) { el.setAttribute(a, el.dataset[k]); delete el.dataset[k]; }
+    }));
+    if (lang === 'es') { const t = dict[norm(document.title)]; if (t) { document.documentElement.dataset.enTitle = document.title; document.title = t; } }
+    else if (document.documentElement.dataset.enTitle) document.title = document.documentElement.dataset.enTitle;
+    document.querySelectorAll('.lang-toggle').forEach((b) => {
+      b.textContent = lang === 'es' ? 'EN' : 'ES';
+      b.setAttribute('aria-label', lang === 'es' ? 'View in English' : 'Ver en español');
+    });
+  };
+
+  let lang = 'en';
+  try { lang = localStorage.getItem('fm-lang') || 'en'; } catch (e) {}
+  if (lang === 'es') apply('es');
+  document.querySelectorAll('.lang-toggle').forEach((b) => b.addEventListener('click', () => {
+    lang = lang === 'es' ? 'en' : 'es';
+    try { localStorage.setItem('fm-lang', lang); } catch (e) {}
+    apply(lang);
+  }));
+})();
