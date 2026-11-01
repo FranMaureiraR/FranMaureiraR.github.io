@@ -1,0 +1,316 @@
+/* ===== Páginas de caso (layout tipo ajwaxman.com) ===== */
+.cs-page { --ink: #141414; --muted: #6b6b6b; --soft: #707070; --line: #e4e4e4; --panel: #f1f2ef; }
+
+/* Botón volver */
+.back {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--bg);
+  display: grid; place-items: center; text-decoration: none; color: var(--ink);
+  transition: background .2s;
+}
+.back:hover { background: #fff; }
+.back svg { width: 14px; height: 14px; }
+.cs-page .nav a { color: var(--muted); }
+.cs-page .nav a:hover { color: var(--ink); opacity: 1; }
+
+/* Encabezado */
+.cs-head { text-align: center; padding: 130px 16px 48px; max-width: 760px; margin: 0 auto; }
+.cs-label { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.cs-head h1 { font-size: clamp(36px, 5.4vw, 52px); font-weight: 600; letter-spacing: -.025em; line-height: 1.08; margin: 14px 0 16px; color: var(--ink); }
+.cs-head p { font-size: 18px; color: var(--muted); }
+
+/* Imagen principal */
+.cs-hero { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.cs-hero .frame {
+  border-radius: 16px; overflow: hidden;
+  background: #e8ede7;
+  display: grid; place-items: center; padding: 48px 24px 0;
+  height: clamp(320px, 52vw, 600px);
+}
+.cs-hero img { max-height: 100%; width: auto; max-width: 100%; object-fit: contain; object-position: bottom; border-radius: 10px 10px 0 0; }
+
+/* Banda tl;dr */
+.cs-tldr { background: #fff; margin-top: 64px; padding: 64px 24px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.cs-tldr .inner { max-width: 640px; margin: 0 auto; }
+.cs-tldr p { font-size: 18px; line-height: 1.65; color: var(--muted); }
+.cs-tldr p b { color: var(--ink); font-weight: 600; }
+.cs-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 24px; margin-top: 36px; }
+.cs-stats strong { display: block; font-size: 34px; font-weight: 600; letter-spacing: -.02em; color: var(--ink); line-height: 1.1; }
+.cs-stats span { font-size: 14px; color: var(--muted); line-height: 1.4; display: block; margin-top: 4px; }
+.cs-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
+.cs-meta dt { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); }
+.cs-meta dd { font-size: 15px; color: var(--ink); margin-top: 4px; line-height: 1.4; }
+
+/* Cuerpo */
+.cs-body { padding: 24px 24px 40px; }
+.cs-sec { max-width: 640px; margin: 0 auto; padding-top: 96px; scroll-margin-top: 40px; }
+.cs-sec .cs-label { font-size: 11px; font-weight: 500; letter-spacing: .15em; color: var(--soft); }
+.cs-sec h2 { font-size: 30px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; color: var(--ink); margin: 10px 0 20px; }
+.cs-sec h3 { font-size: 17px; font-weight: 600; color: var(--ink); margin: 28px 0 6px; }
+.cs-sec p { font-size: 18px; line-height: 1.65; color: var(--muted); }
+.cs-sec p + p { margin-top: 18px; }
+.cs-sec p b { color: var(--ink); font-weight: 600; }
+
+/* Puntos con línea a la izquierda */
+.cs-points { border-left: 1px solid var(--line); padding-left: 22px; margin-top: 24px; display: grid; gap: 18px; }
+.cs-points h3, .cs-points h4 { margin: 0;  font-size: 16px; font-weight: 600; color: var(--ink); }
+.cs-points p { font-size: 16px; line-height: 1.55; margin-top: 2px; }
+
+/* Lista simple */
+.cs-list { list-style: none; margin-top: 20px; }
+.cs-list li { font-size: 17px; line-height: 1.5; color: var(--muted); padding: 12px 0; border-bottom: 1px solid var(--line); }
+.cs-list li:last-child { border-bottom: 0; }
+.cs-list li b { color: var(--ink); font-weight: 600; }
+
+/* Pasos numerados */
+.cs-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 24px; }
+.cs-steps div { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.cs-steps b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+
+/* Etiquetas */
+.cs-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.cs-chips span { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 14px; color: var(--ink); }
+
+/* Imágenes */
+.cs-fig { max-width: 880px; margin: 56px auto 0; }
+.cs-fig .frame { background: var(--panel); border-radius: 16px; padding: 20px; }
+.cs-fig img { width: 100%; height: auto; border-radius: 10px; display: block; }
+.cs-fig figcaption { text-align: center; font-size: 14px; color: var(--soft); margin-top: 14px; }
+
+/* Cita */
+.cs-quote { max-width: 640px; margin: 96px auto 0; font-size: 26px; line-height: 1.35; font-weight: 500; letter-spacing: -.01em; color: var(--ink); border-left: 2px solid var(--green); padding-left: 24px; }
+
+/* Siguiente proyecto */
+.cs-next { max-width: 640px; margin: 120px auto 0; padding: 40px 0 120px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 16px; text-decoration: none; color: var(--ink); }
+.cs-next span { font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); }
+.cs-next strong { font-size: 20px; font-weight: 600; text-align: right; }
+.cs-next:hover strong { text-decoration: underline; }
+
+/* Índice lateral */
+.cs-toc { position: fixed; left: 24px; top: 50%; transform: translateY(-50%); z-index: 40; }
+.cs-toc ul { list-style: none; padding: 12px; border-radius: 12px; border: 1px solid transparent; transition: background .2s, border-color .2s, box-shadow .2s; }
+.cs-toc li { display: flex; align-items: center; height: 22px; }
+.cs-toc a { display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 13px; color: var(--soft); white-space: nowrap; }
+.cs-toc a::before { content: ""; width: 12px; height: 1px; background: #c9c9c9; transition: width .2s, background .2s; flex: none; }
+.cs-toc a span { opacity: 0; max-width: 0; overflow: hidden; transition: opacity .2s; }
+.cs-toc a.active { color: var(--ink); }
+.cs-toc a.active::before { width: 20px; background: var(--ink); }
+.cs-toc:hover ul { background: #fff; border-color: var(--line); box-shadow: 0 8px 30px rgba(0,0,0,.06); }
+.cs-toc:hover a span { opacity: 1; max-width: 260px; }
+.cs-toc:hover a::before { width: 0; margin-right: -10px; }
+@media (max-width: 1100px) { .cs-toc { display: none; } }
+
+@media (max-width: 800px) {
+  .cs-head { padding-top: 110px; }
+  .cs-hero { padding: 0 16px; }
+  .cs-hero .frame { padding: 28px 16px 0; }
+  .cs-tldr { padding: 48px 16px; }
+  .cs-meta { grid-template-columns: 1fr; }
+  .cs-body { padding: 8px 16px 32px; }
+  .cs-sec { padding-top: 72px; }
+  .cs-sec h2 { font-size: 26px; }
+  .cs-fig .frame { padding: 10px; }
+  .cs-quote { font-size: 22px; }
+  .cs-next { flex-direction: column; }
+  .cs-next strong { text-align: left; }
+}
+
+
+/* ===== Template v2: resultados arriba, evidencia después ===== */
+
+/* Escenario del header: aquí irán los slides animados de resultados.
+   Cada .stage-slide es un slide; si hay más de uno, script.js los rota solo. */
+.cs-stage { position: relative; }
+.cs-stage .stage-slide { transition: opacity .8s ease; }
+.cs-stage.rotating .stage-slide { position: absolute; inset: 0; opacity: 0; }
+.cs-stage.rotating .stage-slide.on { position: relative; opacity: 1; }
+.stage-dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+.stage-dots button { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: #cfd3cc; cursor: pointer; }
+.stage-dots button.on { background: var(--ink); }
+.cs-hero .frame.slot-frame { padding: 0; height: auto; display: block; background: none; }
+
+/* Solución / Problema / Impacto */
+.cs-spi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.cs-spi h2 { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--green, #2f5d34); margin: 0 0 10px; }
+.cs-spi p { font-size: 16px; line-height: 1.6; color: var(--muted); }
+.cs-tldr .inner.wide { max-width: 880px; }
+.cs-meta.four { grid-template-columns: repeat(4, 1fr); }
+
+/* Botón para entrar al caso */
+.cs-cta { display: inline-flex; align-items: center; gap: 10px; margin-top: 40px; padding: 14px 22px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; transition: transform .2s, background .2s; }
+.cs-cta:hover { background: #000; transform: translateY(-1px); }
+.cs-cta svg { width: 14px; height: 14px; }
+.cs-body { scroll-margin-top: 40px; }
+
+/* Placeholders de borrador: para completar */
+.tbd { border: 1.5px dashed #a3a3a3; border-radius: 6px; padding: 1px 7px; color: #5f5f5f; background: #fafafa; font-style: normal; font-weight: 500; font-size: .92em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.tbd-block { display: block; max-width: none; padding: 18px 20px; border-radius: 12px; line-height: 1.55; }
+.cs-sec p.tbd-block { color: #5f5f5f; font-size: 16px; }
+.cs-stats strong .tbd { font-size: 22px; vertical-align: middle; }
+
+/* Decisiones clave */
+.cs-dec { padding-top: 56px; }
+.cs-dec .dec { display: grid; grid-template-columns: 44px 1fr; gap: 0 16px; }
+.cs-dec .num { font-size: 14px; font-weight: 600; color: var(--green, #2f5d34); padding-top: 5px; font-variant-numeric: tabular-nums; }
+.cs-dec h3 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--ink); margin: 0 0 12px; }
+.cs-path { margin-top: 18px; border-left: 1px solid var(--line); padding-left: 20px; display: grid; gap: 14px; }
+.cs-path dt { font-size: 11px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); }
+.cs-path dd { font-size: 17px; line-height: 1.6; color: var(--muted); margin: 3px 0 0; }
+
+/* Slots de imagen: gris con la descripción mientras no exista el archivo */
+.slot { position: relative; aspect-ratio: var(--ar, 16 / 9); border-radius: 12px; overflow: hidden; background: #e6e9e4; display: grid; place-items: center; }
+.slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; border-radius: 0; background: #e6e9e4; }
+.slot-label { max-width: 80%; text-align: center; font-size: 14px; line-height: 1.5; color: #555; }
+.slot-label small { display: block; margin-top: 8px; font-size: 11px; color: #6b6b6b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
+.cs-fig .frame.slot-wrap { padding: 0; background: none; }
+.slots { display: grid; gap: 16px; }
+.slots.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.slots.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.slots.row { grid-template-columns: repeat(3, 1fr); }
+.slots .slot-label { font-size: 12px; }
+
+/* Tabla (lenguaje Diff) */
+.cs-table-wrap { overflow-x: auto; margin-top: 24px; }
+.cs-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.5; }
+.cs-table th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+.cs-table td { vertical-align: top; padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line); color: var(--muted); }
+.cs-table td:first-child { color: var(--ink); font-weight: 600; }
+.cs-blockquote { margin: 28px 0 0; font-size: 22px; line-height: 1.45; font-weight: 500; letter-spacing: -.01em; color: var(--ink); border-left: 2px solid var(--green, #2f5d34); padding-left: 22px; }
+
+/* Navegación anterior / siguiente */
+.cs-pager { max-width: 880px; margin: 120px auto 0; padding: 40px 0 120px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.cs-pager a { text-decoration: none; color: var(--ink); display: block; }
+.cs-pager a.next { text-align: right; grid-column: 2; }
+.cs-pager span { font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); }
+.cs-pager strong { display: block; margin-top: 6px; font-size: 20px; font-weight: 600; line-height: 1.3; }
+.cs-pager a:hover strong { text-decoration: underline; }
+
+@media (max-width: 800px) {
+  .cs-spi { grid-template-columns: 1fr; gap: 22px; }
+  .cs-meta.four { grid-template-columns: 1fr 1fr; }
+  .cs-dec .dec { grid-template-columns: 1fr; }
+  .cs-dec .num { padding: 0 0 6px; }
+  .cs-dec h3 { font-size: 20px; }
+  .slots.cols-3 { grid-template-columns: 1fr; }
+  .slots.row { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 78%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+  .slots.row > * { scroll-snap-align: start; }
+  .cs-blockquote { font-size: 19px; }
+  .cs-pager { grid-template-columns: 1fr; }
+  .cs-pager a.next { grid-column: 1; text-align: left; }
+  .cs-stats strong .tbd { font-size: 18px; }
+}
+/* Secciones cuyo título es solo la etiqueta (KEY DECISIONS, IMPACT…) */
+.cs-sec h2.cs-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); margin: 0 0 16px; line-height: 1.4; }
+
+/* Página de contraseña (casos de Front) */
+.gate { max-width: 520px; margin: 0 auto; padding: 180px 24px 120px; text-align: center; }
+.gate h1 { font-size: clamp(30px, 4.6vw, 42px); font-weight: 600; letter-spacing: -.02em; line-height: 1.12; margin: 14px 0 14px; color: var(--ink); }
+.gate-sub { font-size: 17px; color: var(--muted); }
+#gate { margin-top: 36px; text-align: left; }
+#gate label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.gate-row { display: flex; gap: 10px; margin-top: 8px; }
+.gate-row input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 12px 16px; border: 1px solid #8a8a8a; border-radius: 999px; background: #fff; color: var(--ink); }
+.gate-row input:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+.gate-row button { font: inherit; font-size: 15px; font-weight: 600; padding: 12px 20px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; cursor: pointer; }
+.gate-err { min-height: 22px; margin-top: 10px; font-size: 14px; color: #b3261e; }
+@media (max-width: 480px) { .gate { padding-top: 130px; } .gate-row { flex-direction: column; } }
+.cs-stats .tbd { display: inline-block; margin-top: 0; font-size: 14px; }
+.cs-stats strong .tbd { font-size: 22px; }
+
+/* ===== Casos de Front: layout amplio estilo frankbodi.com/project/front =====
+   Misma fuente (Urbanist) con títulos grandes en SemiBold, texto negro de 20–24px
+   y secciones en dos columnas: título a la izquierda, contenido a la derecha. */
+.front-case { --fc-w: min(1264px, calc(100vw - 48px)); --ink: #111; --muted: #2e2e2e; --soft: #666; }
+.front-case .cs-head { text-align: left; max-width: var(--fc-w); padding: 160px 0 64px; }
+.front-case .cs-head .cs-label { font-size: 14px; letter-spacing: .14em; }
+.front-case .cs-head h1 { font-size: clamp(40px, 5.4vw, 72px); font-weight: 600; letter-spacing: -.025em; line-height: 1.04; max-width: 15ch; margin: 20px 0 22px; }
+.front-case .cs-head > p:last-child { font-size: clamp(19px, 1.9vw, 26px); line-height: 1.4; color: #555; max-width: 38ch; }
+.front-case .cs-hero { max-width: calc(var(--fc-w) + 48px); }
+
+/* Overview: título a la izquierda, TL;DR, métricas y metadata a la derecha */
+.front-case .cs-tldr { background: none; border: 0; margin-top: 120px; padding: 0 24px; }
+.front-case .cs-tldr .inner { max-width: var(--fc-w); display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 800px); column-gap: 64px; }
+.front-case .cs-tldr .inner > * { grid-column: 2; }
+.front-case .cs-tldr .inner > .fc-side { grid-column: 1; grid-row: 1 / span 10; align-self: start; }
+.fc-side, .front-case .cs-sec > .cs-label, .front-case .cs-sec > h2.cs-eyebrow { margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; text-transform: none; color: var(--ink); }
+.front-case .cs-tldr p { font-size: clamp(19px, 1.75vw, 24px); line-height: 1.5; color: var(--ink); }
+.front-case .cs-stats { margin-top: 56px; gap: 32px; }
+.front-case .cs-stats strong { font-size: clamp(40px, 4vw, 56px); font-weight: 600; }
+.front-case .cs-stats span { font-size: 16px; color: #555; }
+.front-case .cs-meta { margin-top: 56px; padding-top: 32px; gap: 24px; }
+.front-case .cs-meta dt { font-size: 18px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.front-case .cs-meta dd { font-size: 17px; color: #444; margin-top: 6px; }
+
+/* Secciones del cuerpo */
+.front-case .cs-body { padding: 0 24px 40px; }
+.front-case .cs-sec { max-width: var(--fc-w); display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 800px); column-gap: 64px; padding-top: 140px; }
+.front-case .cs-sec > * { grid-column: 2; }
+.front-case .cs-sec > .cs-label, .front-case .cs-sec > h2.cs-eyebrow { grid-column: 1; grid-row: 1 / span 20; align-self: start; }
+.front-case .cs-sec h2:not(.cs-eyebrow) { font-size: clamp(30px, 3.4vw, 44px); font-weight: 500; letter-spacing: -.02em; line-height: 1.12; margin: 0 0 28px; }
+.front-case .cs-sec p { font-size: 20px; line-height: 1.55; color: var(--muted); }
+.front-case .cs-sec p + p { margin-top: 22px; }
+
+/* "Key decisions": título grande a todo el ancho, como "Optimize" en frankbodi */
+.front-case .cs-sec.cs-big { display: block; padding-top: 180px; }
+.front-case .cs-sec.cs-big > h2.cs-eyebrow { font-size: clamp(44px, 5.4vw, 72px); letter-spacing: -.025em; line-height: 1; }
+
+/* Cada decisión: número y título a la izquierda, explicación a la derecha */
+.front-case .cs-dec { display: block; padding-top: 96px; }
+.front-case .cs-dec .dec { grid-template-columns: minmax(0, 300px) minmax(0, 800px); column-gap: 64px; }
+.front-case .cs-dec .dec > div { display: contents; }
+.front-case .cs-dec .num { grid-column: 1; grid-row: 1 / span 20; align-self: start; font-size: 16px; padding: 0; line-height: 20px; }
+.front-case .cs-dec h3 { grid-column: 1; grid-row: 1 / span 20; align-self: start; font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; margin: 32px 0 0; }
+.front-case .cs-dec .dec > div > :not(h3) { grid-column: 2; }
+.front-case .cs-dec p { font-size: 20px; line-height: 1.55; color: var(--muted); }
+
+/* Starting point / What we tried / What we learned / What shipped en columnas */
+.front-case .cs-path { margin: 0; border: 0; padding: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 48px; }
+.front-case .cs-dec .dec > div > p + .cs-path { margin-top: 36px; }
+.front-case .cs-path dt { font-size: 20px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.front-case .cs-path dd { font-size: 18px; line-height: 1.55; color: var(--muted); margin-top: 10px; }
+
+/* Imágenes, tabla y navegación al ancho completo */
+.front-case .cs-fig { max-width: var(--fc-w); margin-top: 80px; }
+.front-case .cs-table { font-size: 17px; }
+.front-case .cs-table th { font-size: 13px; }
+.front-case .cs-blockquote { font-size: clamp(22px, 2.2vw, 28px); }
+.front-case .cs-pager { max-width: var(--fc-w); }
+.front-case .tbd-block { font-size: 17px !important; }
+
+@media (max-width: 900px) {
+  .front-case .cs-head { padding: 120px 0 40px; }
+  .front-case .cs-tldr { margin-top: 64px; padding: 0 16px; }
+  .front-case .cs-tldr .inner, .front-case .cs-sec, .front-case .cs-dec .dec { grid-template-columns: minmax(0, 1fr); }
+  .front-case .cs-tldr .inner > *, .front-case .cs-sec > *, .front-case .cs-dec .dec > div > *, .front-case .cs-dec .num, .front-case .cs-dec h3 { grid-column: 1 !important; grid-row: auto !important; }
+  .fc-side, .front-case .cs-sec > .cs-label, .front-case .cs-sec > h2.cs-eyebrow { font-size: 24px; margin-bottom: 18px; }
+  .front-case .cs-sec { padding-top: 88px; }
+  .front-case .cs-sec.cs-big { padding-top: 112px; }
+  .front-case .cs-dec { padding-top: 64px; }
+  .front-case .cs-dec h3 { font-size: 26px; margin: 8px 0 18px; }
+  .front-case .cs-sec p, .front-case .cs-dec p { font-size: 18px; }
+  .front-case .cs-path { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .front-case .cs-body { padding: 0 16px 32px; }
+  .front-case .cs-fig { margin-top: 56px; }
+}
+.front-case .cs-cta { justify-self: start; }
+
+/* Mismo layout amplio en Racional, Bci y ETpay: piezas que solo existen en esos casos */
+.front-case .cs-spi { gap: 40px; }
+.front-case .cs-spi h2 { font-size: 13px; }
+.front-case .cs-spi p { font-size: 18px; line-height: 1.55; color: var(--ink); }
+.front-case .cs-spi + .cs-stats { margin-top: 56px; }
+.front-case .cs-sec .cs-stats strong { font-size: 40px; }
+.front-case .cs-points { margin-top: 32px; gap: 24px; }
+.front-case .cs-points h3 { font-size: 20px; }
+.front-case .cs-points p { font-size: 18px; }
+.front-case .cs-list li { font-size: 19px; color: var(--muted); padding: 14px 0; }
+.front-case .cs-steps div { font-size: 15px; }
+.front-case .cs-chips span { font-size: 15px; }
+.front-case .cs-fig figcaption { font-size: 15px; color: #666; }
+/* Cita destacada: alineada con la columna de contenido */
+.front-case .cs-quote { max-width: var(--fc-w); margin-top: 140px; border-left: 0; padding: 0 0 0 364px; font-size: clamp(26px, 2.6vw, 36px); line-height: 1.25; font-weight: 500; letter-spacing: -.02em; }
+@media (max-width: 900px) {
+  .front-case .cs-spi { gap: 24px; }
+  .front-case .cs-quote { padding: 0; margin-top: 88px; font-size: 24px; }
+  .front-case .cs-list li { font-size: 17px; }
+}
