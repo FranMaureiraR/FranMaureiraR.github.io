@@ -315,3 +315,129 @@
   .front-case .cs-quote { padding: 0; margin-top: 88px; font-size: 24px; }
   .front-case .cs-list li { font-size: 17px; }
 }
+
+/* ===== Audit logs: visuales recreados en HTML (no capturas) ===== */
+.al { --al-bg: #f1eff7; --al-ink: #1d1d2b; --al-mut: #6b6b7b; --al-line: #e3e1ea; --al-pur: #6a55e8; --al-add: #e1f4e6; --al-add-ink: #1d7a3e; --al-del: #fde6e3; --al-del-ink: #b42318; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; color: var(--al-ink); }
+.al-stage { background: var(--al-bg); border-radius: 20px; padding: clamp(16px, 3.4vw, 48px); }
+.al-pill { display: inline-block; background: #dcea5a; color: #1d1d2b; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 500; }
+.al-title { font-family: Urbanist, sans-serif; font-size: clamp(22px, 2.6vw, 34px); font-weight: 600; letter-spacing: -.01em; line-height: 1.15; margin: 14px 0 28px; color: var(--al-ink); }
+
+/* Video de portada */
+.al-video { position: relative; background: var(--al-bg, #f1eff7); border-radius: 20px; padding: clamp(12px, 3vw, 48px); }
+.al-video video { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 24px 60px -24px rgba(30, 20, 80, .35); background: #fff; }
+.al-play { position: absolute; right: clamp(20px, 3.6vw, 60px); bottom: clamp(20px, 3.6vw, 60px); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(20, 20, 30, .72); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.al-play svg { width: 14px; height: 14px; }
+
+/* Lienzo a escala: el tablero se diseña en px fijos y se escala al ancho disponible */
+.al-canvas { overflow-x: auto; border-radius: 20px; background: var(--al-bg); }
+.al-sizer { position: relative; margin: 0 auto; }
+.al-board { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.al-dots { background-color: #fafafc; background-image: radial-gradient(#d9d7e2 1px, transparent 1px); background-size: 16px 16px; }
+.al-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.al-wires path { fill: none; stroke: #8b7cf0; stroke-width: 1.6; }
+.al-wires path.dash { stroke: #b9b7c4; stroke-dasharray: 5 5; }
+.al-wires circle { fill: #8b7cf0; }
+
+/* Nodos */
+.al-node { position: absolute; background: #fff; border: 1px solid var(--al-line); border-radius: 10px; box-shadow: 0 1px 2px rgba(20, 20, 40, .06); font-size: 13px; }
+.al-node > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--al-line); }
+.al-node .bl { padding: 10px 14px 0; font-size: 11px; color: var(--al-mut); }
+.al-node .rows { padding: 8px 10px 10px; display: grid; gap: 6px; }
+.al-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; border: 1px solid var(--al-line); border-radius: 7px; padding: 7px 9px; background: #fff; line-height: 1.3; }
+.al-op { font-size: 10px; font-weight: 600; color: var(--al-mut); background: #f3f3f6; border-radius: 4px; padding: 2px 6px; }
+.al-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; border: 1px solid var(--al-line); border-radius: 6px; padding: 2px 7px; background: #fff; white-space: nowrap; }
+.al-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #6a55e8); }
+.al-badge { font-size: 11px; font-weight: 500; border-radius: 5px; padding: 2px 8px; white-space: nowrap; }
+.al-badge.ed { background: var(--al-add); color: var(--al-add-ink); }
+.al-badge.ad { background: var(--al-add); color: var(--al-add-ink); }
+.al-badge.de { background: #ececf1; color: #666; }
+.al-badge.nc { background: #ececf1; color: #666; }
+.al-node.ed, .al-node.ad { border: 1.5px solid #3fb465; }
+.al-node.sel { border: 2px solid var(--al-pur); box-shadow: 0 0 0 5px rgba(106, 85, 232, .14); }
+.al-node.de { cursor: not-allowed; }
+.al-node.de header > span:first-child, .al-node.de .al-row > span:not(.al-op):not(.al-chip) { text-decoration: line-through; color: #555; }
+.al-node.de .al-chip { opacity: .5; }
+.al-node.nc { opacity: .6; }
+.al-mark { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: var(--al-pur); color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center; box-shadow: 0 0 0 4px #fff; }
+.al-tip { position: absolute; background: #1d1d2b; color: #fff; font-size: 12px; line-height: 1.4; border-radius: 6px; padding: 8px 10px; width: 220px; }
+.al-bar { position: absolute; left: 0; right: 0; top: 0; height: 52px; background: #fff; border-bottom: 1px solid var(--al-line); display: flex; align-items: center; gap: 20px; padding: 0 22px; font-size: 13px; color: var(--al-mut); }
+.al-bar b { color: var(--al-ink); font-weight: 600; }
+.al-bar .go { margin-left: auto; color: var(--al-pur); font-weight: 600; }
+.al-ref { position: absolute; border: 1.5px dashed #b7acf5; border-radius: 10px; padding: 12px 14px; background: #fff; font-size: 11px; color: var(--al-mut); }
+.al-ref .r { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 8px; }
+
+/* Panel lateral de detalle */
+.al-panel { position: absolute; top: 52px; bottom: 0; background: #fff; border-left: 1px solid var(--al-line); padding: 0 22px; font-size: 13px; }
+.al-panel > header { display: flex; align-items: center; gap: 6px; height: 64px; border-bottom: 1px solid var(--al-line); margin: 0 -22px 16px; padding: 0 22px; font-weight: 600; font-size: 15px; }
+.al-panel > header span:first-child { margin-right: auto; }
+.al-ib { width: 28px; height: 28px; border-radius: 6px; background: #f1effc; color: var(--al-pur); display: grid; place-items: center; font-size: 13px; }
+.al-ib.x { background: none; color: #666; font-size: 16px; }
+.al-panel .lbl { font-size: 12px; color: var(--al-mut); margin: 16px 0 8px; }
+.al-old { text-decoration: line-through; color: #777; background: #f1f1f4; border-radius: 5px; padding: 2px 7px; font-size: 12px; }
+.al-new { background: var(--al-add); color: #14532d; border-radius: 5px; padding: 2px 7px; font-size: 12px; }
+.al-row.add { background: var(--al-add); border-color: #b9e3c6; }
+.al-row.gone { background: #f4f4f6; color: #888; text-decoration: line-through; }
+
+/* Notas numeradas bajo cada lienzo */
+.al-notes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 28px; }
+.al-notes > div { display: grid; grid-template-columns: 28px 1fr; gap: 4px 10px; align-items: start; }
+.al-notes .al-mark { position: static; box-shadow: none; }
+.front-case .al-notes p { font-size: 15px; line-height: 1.5; color: #555; grid-column: 2; margin: 0; }
+.front-case .al-notes p.t { font-size: 16px; font-weight: 600; color: var(--ink); }
+
+/* Lenguaje de diff lineal: tres paneles */
+.al-panels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); align-items: start; }
+.al-card { background: #fff; border-radius: 12px; border: 1px solid var(--al-line); padding: 18px; font-size: 13px; box-shadow: 0 1px 2px rgba(20, 20, 40, .05); }
+.al-card > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; font-size: 14px; margin-bottom: 14px; }
+.al-card .cnt { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border-radius: 10px; background: #ececf1; font-size: 11px; color: #555; margin-left: 6px; }
+.al-tg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #444; }
+.al-tg i { width: 28px; height: 16px; border-radius: 8px; background: var(--al-pur); position: relative; }
+.al-tg i::after { content: ""; position: absolute; right: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+.al-f { margin-top: 12px; }
+.al-f > span { display: block; font-size: 11px; font-weight: 600; color: var(--al-mut); margin-bottom: 5px; }
+.al-v { border: 1px solid var(--al-line); border-radius: 7px; padding: 8px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; line-height: 1.35; }
+.al-v .del { background: var(--al-del); text-decoration: line-through; border-radius: 4px; padding: 1px 5px; }
+.al-v .add { background: var(--al-add); border-radius: 4px; padding: 1px 5px; }
+.al-v .arr { color: #888; }
+.al-card.gone .al-v { color: #444; }
+
+/* Restricciones y patrones */
+.al-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.al-grid > div { background: #fff; border-radius: 14px; padding: 22px; }
+.al-grid .n, .al-list .n { font-family: Urbanist, sans-serif; color: #8a3ffc; font-weight: 600; font-size: 18px; }
+.front-case .al-grid p, .front-case .al-list p { font-size: 16px; line-height: 1.5; color: #3a3a46; margin: 6px 0 0; }
+.front-case .al-grid p.t, .front-case .al-list p.t { font-size: 18px; font-weight: 600; color: var(--al-ink); margin-top: 4px; }
+.al-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.al-list > div { background: #fff; border-radius: 14px; padding: 20px; }
+
+/* Tabla del audit log */
+.al-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: 14px; }
+.al-table div { line-height: 1.4; }
+.al-tr { display: grid; grid-template-columns: 1.3fr 1fr 1.2fr 1fr; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--al-line); align-items: center; }
+.al-tr.h { font-size: 12px; font-weight: 600; color: var(--al-mut); }
+.al-tr:last-child { border-bottom: 0; }
+.al-res { display: inline-flex; align-items: center; gap: 8px; }
+.al-res svg { width: 16px; height: 16px; color: #777; }
+.al-av { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 4px; background: #e5484d; color: #fff; font-size: 10px; font-weight: 700; margin-right: 6px; }
+.al-tbl-wrap { overflow-x: auto; border-radius: 12px; }
+.al-tbl-wrap .al-table { min-width: 620px; }
+.front-case .al-callout { margin-top: 18px; background: #fff; border: 1.5px solid #b7acf5; border-radius: 12px; padding: 16px 18px; font-size: 15px; line-height: 1.5; color: #3a3a46; max-width: 560px; }
+
+/* Placeholders de imágenes que faltan diseñar */
+.slot.ph { background: #fafafa; border: 1.5px dashed #a3a3a3; }
+.slot.ph .slot-label { color: #4a4a4a; font-size: 15px; max-width: 70%; }
+.slot.ph .slot-label b { display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #777; margin-bottom: 10px; }
+
+@media (max-width: 900px) {
+  .al-panels, .al-grid { grid-template-columns: minmax(0, 1fr); }
+  .al-list { grid-template-columns: minmax(0, 1fr); }
+  .al-notes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+  .slot.ph { aspect-ratio: auto; min-height: 260px; padding: 24px 0; }
+  .slot.ph .slot-label { max-width: 86%; font-size: 14px; }
+}
+@media (max-width: 560px) { .al-notes { grid-template-columns: minmax(0, 1fr); } }
+.slot.ph { width: 100%; }
+.al-canvas { padding: clamp(12px, 2.6vw, 36px); }
+.al-board { border-radius: 12px; box-shadow: 0 0 0 1px var(--al-line), 0 20px 50px -30px rgba(30, 20, 80, .3); overflow: hidden; }
+.front-case .al-notes p + p { margin-top: 2px; }
+.al-notes p.t { align-self: center; }
