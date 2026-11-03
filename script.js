@@ -122,12 +122,12 @@ const fits = [...document.querySelectorAll('.fit')];
 const fitAll = () => {
   const scales = fits.map((el) => {
     const box = el.parentElement;
-    return Math.min(1, (box.clientWidth * 0.86) / el.offsetWidth, (box.clientHeight * 0.76) / el.offsetHeight);
+    return Math.min(1, (box.clientWidth * 0.86) / el.offsetWidth, (box.clientHeight * 0.84) / el.offsetHeight);
   });
   // En computador ambos usan la misma escala para que se vean del mismo tamaño
-  const shared = window.innerWidth > 800 ? Math.min(...scales) : null;
+  // Cada componente usa su propia escala (Front, Bci y ETpay tienen proporciones distintas)
   fits.forEach((el, i) => {
-    el.style.setProperty('--s', shared ?? scales[i]);
+    el.style.setProperty('--s', scales[i]);
     el.style.margin = `${-el.offsetHeight / 2}px 0 0 ${-el.offsetWidth / 2}px`; // centrado exacto
   });
 };
@@ -185,6 +185,72 @@ if (bc && !reduceMotion) {
   }, 3000);
 }
 
+// ===== ETpay: el buscador escribe un banco y aparece su fila =====
+const ep = document.querySelector('.ep');
+if (ep) {
+  const banks = [['Banco Estado', 'estado'], ['Banco Santander', 'santander'], ['Banco de Chile / Edwards', 'chile'], ['Banco Bci', 'bci'], ['Banco Itaú', 'itau'], ['Banco Falabella', 'falabella']];
+  const search = ep.querySelector('.ep-search'), typed = ep.querySelector('.ep-typed');
+  const row = ep.querySelector('.ep-bank'), logo = ep.querySelector('.ep-logo'), name = ep.querySelector('.ep-name');
+  const show = ([n, c]) => { name.textContent = n; logo.className = 'ep-logo ' + c; row.classList.add('show'); };
+  if (reduceMotion) { show(banks[0]); typed.textContent = 'Estado'; search.classList.add('typing'); }
+  else {
+    let b = 0;
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    (async function loop() {
+      for (;;) {
+        const [n, c] = banks[b]; const q = n.replace(/^Banco (de )?/, '').split(' ')[0];
+        search.classList.add('typing');
+        for (let i = 1; i <= q.length; i++) { typed.textContent = q.slice(0, i); await wait(110); }
+        show([n, c]); await wait(500);
+        row.classList.add('pick'); await wait(1500);
+        row.classList.remove('pick', 'show'); await wait(300);
+        for (let i = q.length; i >= 0; i--) { typed.textContent = q.slice(0, i); await wait(35); }
+        search.classList.remove('typing'); await wait(400);
+        b = (b + 1) % banks.length;
+      }
+    })();
+  }
+}
+
+// ===== My journey: arrastrar, flechas y avance automático la primera vez =====
+const jScroll = document.querySelector('.j-scroll');
+if (jScroll) {
+  let down = false, startX = 0, startL = 0, moved = 0;
+  jScroll.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse') return; // en touch se usa el scroll nativo
+    down = true; moved = 0; startX = e.clientX; startL = jScroll.scrollLeft;
+  });
+  window.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - startX; moved = Math.max(moved, Math.abs(dx));
+    if (moved > 4) jScroll.classList.add('dragging');
+    jScroll.scrollLeft = startL - dx;
+  });
+  window.addEventListener('pointerup', () => { down = false; jScroll.classList.remove('dragging'); });
+  // Si fue un arrastre, no abrir el link que estaba debajo
+  jScroll.addEventListener('click', (e) => { if (moved > 4) { e.preventDefault(); e.stopPropagation(); } }, true);
+  jScroll.addEventListener('dragstart', (e) => e.preventDefault());
+
+  const glide = (to, ms = 900) => {
+    const from = jScroll.scrollLeft, t0 = performance.now();
+    const step = (t) => { const k = Math.min(1, (t - t0) / ms); jScroll.scrollLeft = from + (to - from) * (1 - Math.pow(1 - k, 3)); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  document.querySelectorAll('.j-arrows button').forEach((btn) => btn.addEventListener('click', () => {
+    glide(jScroll.scrollLeft + Number(btn.dataset.dir) * Math.min(420, jScroll.clientWidth * 0.8), 600);
+  }));
+  jScroll.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); glide(jScroll.scrollLeft + (e.key === 'ArrowRight' ? 380 : -380), 450); }
+  });
+  // La primera vez que aparece recorre la línea de tiempo hasta hoy (Front), como en un viaje
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) { io.disconnect(); setTimeout(() => glide(jScroll.scrollWidth - jScroll.clientWidth, 2200), 300); }
+    }, { threshold: 0.45 });
+    io.observe(jScroll);
+  }
+}
+
 // ===== Slides del header de cada caso: si hay más de uno, rotan solos =====
 document.querySelectorAll('.cs-stage').forEach((stage) => {
   const slides = [...stage.querySelectorAll('.stage-slide')];
@@ -214,7 +280,7 @@ document.querySelectorAll('.cs-stage').forEach((stage) => {
 // Traduce cada texto buscando su versión en inglés en un diccionario:
 // window.I18N_ES (i18n-es.js, páginas públicas) + <script id="i18n-page"> (dentro de cada caso de Front, cifrado).
 (() => {
-  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a';
+  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a, .j-btn, .cv-tab, .ab-btn, .g-cat, .ab-stats span, .ab-when, .ab-chips li';
   let dict = Object.assign({}, window.I18N_ES || {});
   const own = document.getElementById('i18n-page');
   if (own) { try { Object.assign(dict, JSON.parse(own.textContent)); } catch (e) {} }
