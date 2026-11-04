@@ -897,3 +897,6 @@
   .cs-v2 .cs-tldr:has(.cs-meta.four) .cs-stats > div:nth-child(2) { grid-column: span 2; }
 }
 .cs-v2 .cs-stats > div { min-width: 0; }
+/* Video del prototipo arriba del pliegue */
+.al-movie { position: relative; }
+.al-movie video { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 24px 60px -28px rgba(30, 20, 80, .35); background: #fff; }

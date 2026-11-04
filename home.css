@@ -401,3 +401,45 @@ body.cv-open { overflow: hidden; }
   .nav { gap: 16px; }
   .nav a[href$="#journey"], .nav a[href$="#contact"] { display: none; }
 }
+
+/* ===== Mosaico v3: logo de Front arriba (fondo claro) y Mis Stocks en vez del celular ===== */
+@media (min-width: 801px) {
+  .m-flogo   { grid-column: 4; grid-row: 1; }
+  .m-stocks2 { grid-column: 4; grid-row: 2 / 4; }
+  .m-dots    { grid-column: 4; grid-row: 4; }
+}
+.m-flogo { background: var(--front-200); }
+.fl-shadow { fill: #7322a5; opacity: .18; }
+@keyframes flShadow { 0%, 100% { scale: 1; opacity: .18; } 50% { scale: .8; opacity: .1; } }
+.mosaic .m-flogo svg { width: 34%; height: auto; }
+.m-stocks2 { position: relative; display: grid; place-items: center; background: #efeaf9; }
+.m-dots { display: grid; place-items: center; background: var(--g); }
+.sk { width: 520px; box-sizing: border-box; padding: 30px 30px 26px; background: #fff; border-radius: 30px; border: 1.5px solid #ececec; box-shadow: 0 6px 24px rgba(40, 20, 90, .06); font-family: "Poppins", var(--font); color: #111; animation: float 6.5s ease-in-out infinite; }
+.sk-top { display: flex; align-items: center; gap: 16px; }
+.mosaic .sk .rs-icon svg { width: 46px; height: 46px; display: block; }
+.sk-title { font-size: 24px; }
+.sk-chev { margin-left: auto; font-size: 30px; color: #333; line-height: 1; }
+.sk-total { display: flex; align-items: baseline; gap: 12px; margin: 22px 0 8px; }
+.sk-sum { font-size: 42px; font-weight: 600; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.sk-gain, .sk-pct { font-size: 18px; color: #c0392b; font-variant-numeric: tabular-nums; }
+.sk-gain.up, .sk-pct.up { color: #19a37a; }
+.mosaic .sk-spark { width: 100%; height: 64px; margin-bottom: 14px; }
+.sk-spark .ln { fill: none; stroke: #2ec99e; stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-dasharray: 400; animation: draw 4s ease-in-out infinite; }
+.sk-spark .area { fill: rgba(46, 201, 158, .14); }
+.sk-row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1.5px solid #f0f0f0; }
+.sk-logo { width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid #e6e6e6; display: grid; place-items: center; flex: none; background: #fff; }
+.mosaic .sk-logo svg { width: 26px; height: 26px; }
+.sk-l { font: 700 24px/1 Georgia, serif; color: #111; }
+.sk-l.nv { font-family: "Poppins", sans-serif; color: #76b900; font-size: 22px; }
+.sk-n { display: flex; flex-direction: column; flex: 1; font-size: 19px; line-height: 1.25; }
+.sk-n small, .sk-v small { font-size: 15px; color: #8a8a8a; }
+.sk-v { display: flex; flex-direction: column; align-items: flex-end; font-size: 19px; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.sk-v .sk-pct { font-size: 15px; transition: color .4s; }
+.sk-val { transition: opacity .3s; }
+.sk-cta { margin: 16px 0 0 auto; width: max-content; padding: 12px 22px; border-radius: 999px; background: #111; color: #fff; font-size: 18px; font-weight: 500; }
+@media (max-width: 800px) {
+  .m-flogo { grid-column: auto; grid-row: auto; }
+  .m-stocks2 { grid-column: 2; grid-row: auto / span 2; }
+  .m-dots { grid-column: auto; grid-row: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .sk, .sk * { animation: none !important; } }

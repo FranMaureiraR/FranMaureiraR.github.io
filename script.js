@@ -320,3 +320,26 @@ document.querySelectorAll('.cs-stage').forEach((stage) => {
     apply(lang);
   }));
 })();
+
+// ===== Mis Stocks del mosaico: los valores y porcentajes cambian solos =====
+(() => {
+  const sk = document.querySelector('.sk');
+  if (!sk || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rows = [...sk.querySelectorAll('.sk-row')], sum = sk.querySelector('.sk-sum'), gain = sk.querySelector('.sk-gain');
+  const base = [72.43, 24.10, 18.55, 12.42, 6.56];
+  const money = (n) => 'US$' + n.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  setInterval(() => {
+    let total = 0;
+    rows.forEach((r, i) => {
+      const ch = (Math.random() - 0.4) * 0.06, v = base[i] * (1 + ch); total += v;
+      const pct = r.querySelector('.sk-pct'), up = ch >= 0;
+      r.querySelector('.sk-val').textContent = money(v);
+      pct.textContent = (up ? '↗ ' : '↘ ') + Math.abs(ch * 100 + (up ? 3 : 0)).toLocaleString('es-CL', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
+      pct.classList.toggle('up', up);
+    });
+    sum.textContent = money(total);
+    const g = (total / 128.0 - 1) * 100;
+    gain.textContent = (g >= 0 ? '↗ ' : '↘ ') + Math.abs(g).toLocaleString('es-CL', { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + '%';
+    gain.classList.toggle('up', g >= 0);
+  }, 2600);
+})();
