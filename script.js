@@ -280,7 +280,7 @@ document.querySelectorAll('.cs-stage').forEach((stage) => {
 // Traduce cada texto buscando su versión en inglés en un diccionario:
 // window.I18N_ES (i18n-es.js, páginas públicas) + <script id="i18n-page"> (dentro de cada caso de Front, cifrado).
 (() => {
-  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a, .j-btn, .cv-tab, .ab-btn, .g-cat, .ab-stats span, .ab-when, .ab-chips li';
+  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-stats strong, .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a, .j-btn, .cv-tab, .ab-btn, .g-cat, .ab-stats span, .ab-when, .ab-chips li';
   let dict = Object.assign({}, window.I18N_ES || {});
   const own = document.getElementById('i18n-page');
   if (own) { try { Object.assign(dict, JSON.parse(own.textContent)); } catch (e) {} }
