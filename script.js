@@ -280,7 +280,7 @@ document.querySelectorAll('.cs-stage').forEach((stage) => {
 // Traduce cada texto buscando su versión en inglés en un diccionario:
 // window.I18N_ES (i18n-es.js, páginas públicas) + <script id="i18n-page"> (dentro de cada caso de Front, cifrado).
 (() => {
-  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-stats strong, .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a, .j-btn, .cv-tab, .ab-btn, .g-cat, .ab-stats span, .ab-when, .ab-chips li';
+  const SEL = 'h1, h2, h3, p, li, dt, dd, figcaption, th, td, blockquote, label, .cs-chips span, .cs-steps div, .cs-stats span:not(.tbd), .cs-stats strong, .cs-cta span, .cs-pager span, .cs-pager strong, .nav a, .slot-label, .cs-toc a span, .contact .links a, .j-btn, .cv-tab, .ab-btn, .g-cat, .fp-cap, .ab-stats span, .ab-when, .ab-chips li';
   let dict = Object.assign({}, window.I18N_ES || {});
   const own = document.getElementById('i18n-page');
   if (own) { try { Object.assign(dict, JSON.parse(own.textContent)); } catch (e) {} }
@@ -343,3 +343,50 @@ document.querySelectorAll('.cs-stage').forEach((stage) => {
     gain.classList.toggle('up', g >= 0);
   }, 2600);
 })();
+
+// ===== Reproductor de flujo (.fp): pasa las pantallas solo, mueve el cursor y hace clic donde corresponde =====
+document.querySelectorAll('.fp').forEach((fp) => {
+  const shots = [...fp.querySelectorAll('.fp-shot')], steps = [...fp.querySelectorAll('.fp-step')];
+  const cursor = fp.querySelector('.fp-cursor'), capbox = fp.querySelector('.fp-capbox');
+  const btnPlay = fp.querySelector('[data-fp="play"]');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dur = (i) => +(shots[i].dataset.d || 5200);
+  let cur = -1, timer = null, clickT = null, paused = calm;
+  const pauseIcon = '<svg viewBox="0 0 14 14" fill="currentColor"><rect x="3" y="2" width="3" height="10" rx="1"/><rect x="8" y="2" width="3" height="10" rx="1"/></svg>';
+  const playIcon = '<svg viewBox="0 0 14 14" fill="currentColor"><path d="M4 2.5v9l7-4.5z"/></svg>';
+  const setBtn = () => { if (!btnPlay) return; btnPlay.innerHTML = paused ? playIcon : pauseIcon; btnPlay.setAttribute('aria-label', paused ? 'Play' : 'Pause'); fp.classList.toggle('paused', paused); };
+  const show = (i) => {
+    cur = (i + shots.length) % shots.length;
+    shots.forEach((s, j) => s.classList.toggle('on', j === cur));
+    steps.forEach((s, j) => { s.classList.toggle('on', j === cur); s.classList.toggle('done', j < cur); s.setAttribute('aria-current', j === cur ? 'step' : 'false'); });
+    fp.style.setProperty('--d', dur(cur) + 'ms');
+    // Reinicia la barra de progreso del paso actual
+    const bar = steps[cur] && steps[cur].querySelector('i'); if (bar) { bar.style.display = 'none'; void bar.offsetWidth; bar.style.display = ''; }
+    if (capbox) capbox.innerHTML = `<b>${cur + 1}/${shots.length}</b>` + steps[cur].querySelector('.fp-cap').innerHTML;
+    const s = shots[cur];
+    if (cursor) {
+      if (s.dataset.x) { cursor.classList.remove('hide'); cursor.style.left = s.dataset.x + '%'; cursor.style.top = s.dataset.y + '%'; }
+      else cursor.classList.add('hide');
+      cursor.classList.remove('click'); clearTimeout(clickT);
+      if (s.dataset.click !== undefined && !calm) clickT = setTimeout(() => { cursor.classList.add('click'); }, dur(cur) - 900);
+    }
+    clearTimeout(timer);
+    if (!paused) timer = setTimeout(() => show(cur + 1), dur(cur));
+  };
+  steps.forEach((s, j) => s.addEventListener('click', () => show(j)));
+  fp.querySelector('[data-fp="prev"]')?.addEventListener('click', () => show(cur - 1));
+  fp.querySelector('[data-fp="next"]')?.addEventListener('click', () => show(cur + 1));
+  btnPlay?.addEventListener('click', () => { paused = !paused; setBtn(); show(cur); });
+  // Solo corre cuando está en pantalla
+  if ('IntersectionObserver' in window) {
+    let started = false;
+    new IntersectionObserver((en) => en.forEach((e) => {
+      if (e.isIntersecting && !started) { started = true; show(0); }
+      else if (!e.isIntersecting && started && !paused) { clearTimeout(timer); }
+      else if (e.isIntersecting && started && !paused) { clearTimeout(timer); timer = setTimeout(() => show(cur + 1), dur(cur)); }
+    }), { threshold: 0.3 }).observe(fp);
+  } else show(0);
+  setBtn();
+  // Al cambiar de idioma, el texto del paso actual se actualiza
+  document.querySelectorAll('.lang-toggle').forEach((b) => b.addEventListener('click', () => setTimeout(() => { if (cur >= 0 && capbox) capbox.innerHTML = `<b>${cur + 1}/${shots.length}</b>` + steps[cur].querySelector('.fp-cap').innerHTML; }, 0)));
+});

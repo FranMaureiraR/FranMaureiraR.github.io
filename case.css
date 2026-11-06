@@ -900,3 +900,33 @@
 /* Video del prototipo arriba del pliegue */
 .al-movie { position: relative; }
 .al-movie video { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 24px 60px -28px rgba(30, 20, 80, .35); background: #fff; }
+
+/* ===== Reproductor de flujo: pantallas reales que avanzan solas, con cursor y pasos ===== */
+.fp { position: relative; background: var(--al-bg, #f1eff7); border-radius: 20px; padding: clamp(10px, 1.8vw, 24px); font-family: "Inter", system-ui, sans-serif; }
+.fp-stage { position: relative; aspect-ratio: 1440 / 900; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px -28px rgba(30, 20, 80, .35); }
+.fp-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top left; opacity: 0; transition: opacity .6s ease; }
+.fp-shot.on { opacity: 1; }
+.fp-cursor { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -3px 0 0 -4px; pointer-events: none; transition: left 1s cubic-bezier(.4, 0, .2, 1), top 1s cubic-bezier(.4, 0, .2, 1), opacity .3s; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)); z-index: 2; }
+.fp-cursor svg { width: 100%; height: 100%; display: block; }
+.fp-cursor::after { content: ""; position: absolute; left: -10px; top: -10px; width: 26px; height: 26px; border-radius: 50%; background: rgba(98, 87, 244, .35); transform: scale(0); opacity: 0; }
+.fp-cursor.click::after { animation: fpClick .6s ease-out; }
+@keyframes fpClick { 0% { transform: scale(.2); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+.fp-cursor.hide { opacity: 0; }
+.fp-ui { display: flex; align-items: flex-start; gap: 14px; margin-top: 14px; }
+.fp-steps { flex: 1; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; }
+.fp-step { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
+.fp-step i { display: block; height: 3px; border-radius: 3px; background: rgba(21, 19, 27, .12); overflow: hidden; }
+.fp-step i::after { content: ""; display: block; height: 100%; width: 0; background: #6257f4; }
+.fp-step.done i::after { width: 100%; }
+.fp-step.on i::after { animation: fpFill var(--d, 5s) linear forwards; }
+.fp.paused .fp-step.on i::after { animation-play-state: paused; }
+@keyframes fpFill { to { width: 100%; } }
+.fp-step .fp-cap { display: none; font-size: 13.5px; line-height: 1.45; color: #332c3a; }
+.fp-capbox { min-height: 3.2em; margin-top: 10px; font-size: 15px; line-height: 1.5; color: #332c3a; }
+.fp-capbox b { color: #6257f4; font-weight: 600; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.fp-ctl { display: flex; gap: 6px; flex: none; }
+.fp-ctl button { width: 30px; height: 30px; border-radius: 50%; border: 0; background: #fff; color: #15131b; display: grid; place-items: center; cursor: pointer; box-shadow: 0 0 0 1px #e3e1ea; }
+.fp-ctl button:hover { background: #15131b; color: #fff; }
+.fp-ctl svg { width: 12px; height: 12px; }
+.fp-step:focus-visible { outline: 2px solid #6257f4; outline-offset: 4px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .fp-shot, .fp-cursor { transition: none; } .fp-step.on i::after { animation: none; width: 100%; } }
