@@ -511,3 +511,72 @@ html.lenis, html.lenis body { height: auto; }
 .nav { align-items: center; }
 .lang-toggle { font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .06em; min-width: 40px; height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; transition: background .2s, color .2s; }
 .lang-toggle:hover { background: #111; color: #fff; border-color: #111; }
+
+/* ===== Movimiento con la misma sensación que frankbodi.com =====
+   Curvas largas y suaves: salen rápido y se asientan lento (expo), y las transiciones de página
+   van y vuelven con una curva simétrica. Todas las animaciones del sitio usan estas variables. */
+:root {
+  --ease-out: cubic-bezier(.16, 1, .3, 1);      /* expo out: apariciones, hovers */
+  --ease-in-out: cubic-bezier(.76, 0, .24, 1);  /* quart in-out: cambios de página, desplazamientos */
+  --t-reveal: 1.4s;
+  --t-hover: .7s;
+}
+
+/* Transición entre páginas tipo "card": la página actual se achica a una tarjeta redondeada sobre
+   el mismo gris claro de Frank (#F9FAFA), la nueva sube desde abajo como tarjeta y luego crece.
+   Usa las View Transitions del navegador (Chrome, Edge y Safari); en los demás la página cambia normal. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition { background: #f9fafa; }
+  ::view-transition-group(root) { animation-duration: 1.6s; }
+  ::view-transition-old(root) { animation: vtCardOut 1.6s linear both; }
+  ::view-transition-new(root) { animation: vtCardIn 1.6s linear both; }
+  ::view-transition-old(root), ::view-transition-new(root) { overflow: hidden; }
+}
+@keyframes vtCardOut {
+  0% { transform: scale(1); border-radius: 0; box-shadow: 0 0 0 rgba(21, 19, 27, 0); animation-timing-function: cubic-bezier(.76, 0, .24, 1); }
+  40% { transform: scale(.85); border-radius: 32px; box-shadow: 0 40px 90px -40px rgba(21, 19, 27, .28); animation-timing-function: cubic-bezier(.76, 0, .24, 1); }
+  100% { transform: scale(.85) translateY(-8%); border-radius: 32px; opacity: .55; box-shadow: 0 40px 90px -40px rgba(21, 19, 27, .18); }
+}
+@keyframes vtCardIn {
+  0% { transform: translateY(105%) scale(.85); border-radius: 32px; box-shadow: 0 40px 90px -40px rgba(21, 19, 27, .28); animation-timing-function: cubic-bezier(.76, 0, .24, 1); }
+  30% { transform: translateY(105%) scale(.85); border-radius: 32px; animation-timing-function: cubic-bezier(.76, 0, .24, 1); }
+  68% { transform: translateY(0) scale(.85); border-radius: 32px; box-shadow: 0 40px 90px -40px rgba(21, 19, 27, .28); animation-timing-function: cubic-bezier(.76, 0, .24, 1); }
+  100% { transform: translateY(0) scale(1); border-radius: 0; box-shadow: 0 0 0 rgba(21, 19, 27, 0); }
+}
+
+/* Apariciones al hacer scroll y hovers con la misma curva */
+.reveal { transform: translateY(40px); transition: opacity var(--t-reveal) var(--ease-out), transform var(--t-reveal) var(--ease-out); }
+.mosaic.in .tile { animation-duration: 1.4s; animation-timing-function: var(--ease-out); }
+.mosaic.in .tile:nth-child(2) { animation-delay: .1s; } .mosaic.in .tile:nth-child(3) { animation-delay: .2s; }
+.mosaic.in .tile:nth-child(4) { animation-delay: .3s; } .mosaic.in .tile:nth-child(5) { animation-delay: .4s; }
+.mosaic.in .tile:nth-child(6) { animation-delay: .5s; } .mosaic.in .tile:nth-child(7) { animation-delay: .6s; }
+.mosaic.in .tile:nth-child(8) { animation-delay: .7s; } .mosaic.in .tile:nth-child(9) { animation-delay: .8s; }
+.mosaic.in .tile:nth-child(10) { animation-delay: .9s; }
+.mosaic .tile img, .g-media img, .gv > * { transition: transform var(--t-hover) var(--ease-out), translate var(--t-hover) var(--ease-out); }
+.hero h1 { animation: ink 1.8s .3s var(--ease-out) forwards; }
+.to-top, .nav a, .lang-toggle, .gallery-arrows button { transition-duration: .4s; transition-timing-function: var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .reveal { transition: none; } }
+
+/* ===== Entrada al abrir la página (como frankbodi.com) =====
+   Cada pieza parte 64px abajo e invisible, sube pasándose un poco y vuelve a su lugar.
+   Van una tras otra: header, etiqueta, título (palabra por palabra en el home), bajada y bloque principal. */
+@keyframes riseIn {
+  0% { opacity: 0; transform: translateY(64px); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  54% { opacity: 1; transform: translateY(-10px); animation-timing-function: cubic-bezier(.33, 1, .68, 1); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes navIn { 0% { opacity: 0; transform: translateY(-18px); } 100% { opacity: 1; transform: none; } }
+html.intro .header .logo, html.intro .header .back, html.intro .nav > * { animation: navIn 1.1s var(--ease-out) both; animation-delay: .25s; }
+html.intro .nav > *:nth-child(2) { animation-delay: .33s; } html.intro .nav > *:nth-child(3) { animation-delay: .41s; }
+html.intro .nav > *:nth-child(4) { animation-delay: .49s; } html.intro .nav > *:nth-child(5) { animation-delay: .57s; }
+html.intro .hero > p, html.intro .ab-hero > *, html.intro .cs-top-text > *, html.intro .cs-top-media,
+html.intro .cs-head > *, html.intro .cs-page > main > .cs-hero:first-of-type { animation: riseIn 1.3s both; animation-delay: .5s; }
+html.intro .hero h1 .w { display: inline-block; animation: riseIn 1.3s both, ink 1.8s var(--ease-out) both; animation-delay: calc(.45s + var(--i) * .06s); }
+html.intro .hero h1:has(.w) { animation: none; color: var(--text); }
+html.intro .hero > p { animation-delay: 1.05s; }
+html.intro .ab-hero > :nth-child(2), html.intro .cs-top-text > :nth-child(2), html.intro .cs-head > :nth-child(2) { animation-delay: .62s; }
+html.intro .ab-hero > :nth-child(3), html.intro .cs-top-text > :nth-child(3), html.intro .cs-head > :nth-child(3) { animation-delay: .74s; }
+html.intro .ab-hero > :nth-child(4), html.intro .cs-top-text > :nth-child(4) { animation-delay: .86s; }
+html.intro .cs-top-media, html.intro .cs-page > main > .cs-hero:first-of-type { animation-delay: .8s; }
+html.intro .mosaic { transition-delay: .9s; }

@@ -443,3 +443,55 @@ body.cv-open { overflow: hidden; }
   .m-dots { grid-column: auto; grid-row: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .sk, .sk * { animation: none !important; } }
+
+/* ===== Featured work sin retener el scroll: carrusel horizontal propio ===== */
+.featured { height: auto !important; padding: 120px 0 40px; }
+.featured .h-sticky { position: static; height: auto; overflow: visible; display: block; }
+.featured .gallery { overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none; cursor: grab; padding-bottom: 12px; }
+.featured .gallery::-webkit-scrollbar { display: none; }
+.featured .gallery.dragging { cursor: grabbing; scroll-snap-type: none; }
+.featured .gallery.dragging .g-item { pointer-events: none; }
+.featured .g-track { transform: none !important; width: max-content; padding: 0 max(24px, calc((100vw - var(--max)) / 2 + 24px)); }
+.featured .g-item { scroll-snap-align: start; scroll-margin-left: max(24px, calc((100vw - var(--max)) / 2 + 24px)); -webkit-user-drag: none; }
+.featured .g-item img { -webkit-user-drag: none; }
+@media (max-width: 800px) {
+  .featured { padding: 80px 0 40px; }
+  .featured .g-track { flex-direction: row; width: max-content; padding: 0 16px; gap: 16px; }
+  .featured .g-item { width: min(82vw, 420px); flex: none; scroll-margin-left: 16px; }
+  .featured .gallery { cursor: auto; scroll-snap-type: x mandatory; }
+  .featured .gallery-arrows { display: none; }
+}
+/* Sin "snap" en computador: evita saltos al soltar el arrastre o con el trackpad */
+@media (min-width: 801px) {
+  .featured .gallery, .featured .gallery.dragging { scroll-snap-type: none; }
+  .featured .gallery.dragging .g-item { pointer-events: auto; }
+  .featured .gallery.dragging .g-media img { transition: none; }
+}
+
+/* ===== My journey: se arma desde la izquierda; etapas antiguas suaves hasta pasar el mouse o hacer clic ===== */
+.j-group { transition: opacity .45s ease, translate .7s cubic-bezier(.2, .7, .2, 1); }
+.j-group .j-line i { transform-origin: left center; transition: transform .6s ease; }
+.j-scroll.j-build .j-group:not(.in) { opacity: 0; translate: -36px 0; }
+.j-scroll.j-build .j-group:not(.in) .j-line i { transform: scaleX(0); }
+.j-group.j-dim { opacity: .3; }
+.j-track .j-group.j-dim:hover, .j-group.j-dim.j-seen, .j-group.j-dim:focus-within { opacity: 1; }
+.j-track:has(.j-group:not(.j-empty):hover) .j-group:not(:hover) { opacity: .3; }
+@media (max-width: 800px) { .j-group.j-dim { opacity: .45; } .j-track:has(.j-group:hover) .j-group.j-dim:not(.j-seen) { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .j-group { transition: none; } }
+/* Misma curva que el resto (sensación Frank) */
+.j-group { transition: opacity .9s var(--ease-out), translate 1.2s var(--ease-out); }
+.j-group .j-line i { transition: transform 1s var(--ease-out); }
+.j-line::before { transition: background .5s var(--ease-out), border-color .5s var(--ease-out), scale .5s var(--ease-out); }
+.j-btn, .ab-btn, .cv-tab { transition: background .5s var(--ease-out), color .5s var(--ease-out); }
+
+/* Titular del home más ancho: menos líneas; las formas flotantes quedan detrás */
+@media (min-width: 801px) {
+  .hero h1 { position: relative; z-index: 1; max-width: none; width: calc(100vw - max(48px, (100vw - var(--max)) / 2 + 48px)); max-width: 1320px; }
+  .hero-shapes { z-index: 0; opacity: .85; }
+}
+/* Bloque de apertura del home centrado: mismo margen a la izquierda y a la derecha */
+@media (min-width: 801px) {
+  .hero.wrap { max-width: 1480px; padding-left: clamp(24px, 5vw, 96px); padding-right: clamp(24px, 5vw, 96px); }
+  .hero h1 { width: auto; max-width: none; }
+  .hero-shapes { right: clamp(8px, 4vw, 96px); }
+}

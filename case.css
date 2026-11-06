@@ -930,3 +930,9 @@
 .fp-ctl svg { width: 12px; height: 12px; }
 .fp-step:focus-visible { outline: 2px solid #6257f4; outline-offset: 4px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .fp-shot, .fp-cursor { transition: none; } .fp-step.on i::after { animation: none; width: 100%; } }
+/* Misma curva que el resto (sensación Frank) */
+.fp-shot { transition: opacity 1s var(--ease-out); }
+.fp-cursor { transition: left 1.3s var(--ease-in-out), top 1.3s var(--ease-in-out), opacity .4s var(--ease-out); }
+.gate-art { animation: gateIn 1.4s var(--ease-out) both; }
+.gate-box { animation: gateIn 1.4s .15s var(--ease-out) both; }
+.cs-cta, .cs-pager a, .al-play { transition: all .5s var(--ease-out); }

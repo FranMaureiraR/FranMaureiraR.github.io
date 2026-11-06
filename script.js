@@ -3,13 +3,13 @@
 let lenis = null;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (window.Lenis && !reduceMotion) {
-  lenis = new window.Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+  lenis = new window.Lenis({ lerp: 0.07, wheelMultiplier: 0.85 });
   document.documentElement.style.scrollBehavior = 'auto';
   const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
   requestAnimationFrame(raf);
 }
 const smoothTo = (target) => {
-  if (lenis) lenis.scrollTo(target, { duration: 1.4 });
+  if (lenis) lenis.scrollTo(target, { duration: 1.8, easing: (k) => (k < .5 ? 8 * k ** 4 : 1 - Math.pow(-2 * k + 2, 4) / 2) });
   else if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' });
   else target.scrollIntoView({ behavior: 'smooth' });
 };
@@ -69,51 +69,59 @@ if (sections.length) {
   mark();
 }
 
-// ===== Featured work: el scroll vertical mueve los proyectos hacia el lado (solo en computador) =====
-const work = document.querySelector('.featured');
-const track = document.querySelector('.g-track');
-if (work && track) {
-  const desktop = window.matchMedia('(min-width: 801px)');
-  const buttons = document.querySelectorAll('.gallery-arrows button');
-  const PACE = 1.6; // cuánto scroll vertical hace falta por cada píxel horizontal (más alto = más lento)
-  let distance = 0; // recorrido horizontal
-
-  const layout = () => {
-    if (desktop.matches) {
-      distance = Math.max(0, track.scrollWidth - window.innerWidth);
-      work.style.height = `${window.innerHeight + distance * PACE}px`;
-    } else {
-      distance = 0;
-      work.style.height = '';
-      track.style.transform = '';
-    }
-    move();
+// ===== Featured work: galería horizontal propia (el scroll vertical de la página pasa de largo) =====
+// Se mueve con las flechas, arrastrando con el mouse o con el trackpad. No retiene el scroll de la página.
+const gallery = document.querySelector('.featured .gallery');
+if (gallery) {
+  const items = () => [...gallery.querySelectorAll('.g-item')];
+  const buttons = document.querySelectorAll('.featured .gallery-arrows button');
+  const update = () => {
+    const max = gallery.scrollWidth - gallery.clientWidth;
+    if (buttons.length) { buttons[0].disabled = gallery.scrollLeft <= 2; buttons[1].disabled = gallery.scrollLeft >= max - 2; }
   };
-
-  const progress = () => Math.min(distance, Math.max(0, (window.scrollY - work.offsetTop) / PACE));
-
-  const move = () => {
-    if (!desktop.matches) return;
-    const p = progress();
-    track.style.transform = `translate3d(${-p}px, 0, 0)`;
-    if (buttons.length) {
-      buttons[0].disabled = p <= 2;
-      buttons[1].disabled = p >= distance - 2;
-    }
-  };
-
-  // Las flechas avanzan un proyecto moviendo el scroll de la página
   buttons.forEach((b) => b.addEventListener('click', () => {
-    const step = track.querySelector('.g-item').getBoundingClientRect().width + 28;
-    const target = Math.min(distance, Math.max(0, progress() + step * Number(b.dataset.dir)));
-    smoothTo(work.offsetTop + target * PACE);
+    const step = items()[0].getBoundingClientRect().width + 28;
+    const max = gallery.scrollWidth - gallery.clientWidth, from = gallery.scrollLeft;
+    const to = Math.max(0, Math.min(max, from + step * Number(b.dataset.dir))), t0 = performance.now();
+    busy = true;
+    const tick = (t) => { const k = Math.min(1, (t - t0) / 1100), e = k < .5 ? 8 * k ** 4 : 1 - Math.pow(-2 * k + 2, 4) / 2; gallery.scrollLeft = from + (to - from) * e; if (k < 1) requestAnimationFrame(tick); else { busy = false; pos = gallery.scrollLeft; hold = performance.now() + 3000; } };
+    requestAnimationFrame(tick);
   }));
+  gallery.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+  // Arrastrar con el mouse (en touch se usa el scroll nativo)
+  let down = false, sx = 0, sl = 0, moved = 0;
+  gallery.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; down = true; moved = 0; sx = e.clientX; sl = gallery.scrollLeft; });
+  window.addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - sx; moved = Math.max(moved, Math.abs(dx)); if (moved > 4) gallery.classList.add('dragging'); gallery.scrollLeft = sl - dx; });
+  window.addEventListener('pointerup', () => { down = false; gallery.classList.remove('dragging'); });
+  gallery.addEventListener('click', (e) => { if (moved > 4) { e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
+  gallery.addEventListener('dragstart', (e) => e.preventDefault());
+  // Gesto horizontal del trackpad: lo maneja la galería; el vertical sigue moviendo la página con el scroll suave
+  gallery.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.stopPropagation(); hold = performance.now() + 3000; } }, { passive: true });
 
-  window.addEventListener('scroll', move, { passive: true });
-  window.addEventListener('resize', layout);
-  window.addEventListener('load', layout);
-  desktop.addEventListener('change', layout);
-  layout();
+  // Movimiento automático muy lento. Se detiene al pasar el mouse, al arrastrar o mientras corre una flecha;
+  // si la persona movió la galería, sigue desde esa posición. Al llegar a un extremo espera y vuelve.
+  var pos = gallery.scrollLeft, busy = false, hold = 0;
+  let dir = 1, last = 0, hover = false, visible = false;
+  const SPEED = 9; // píxeles por segundo
+  gallery.addEventListener('mouseenter', () => { hover = true; });
+  gallery.addEventListener('mouseleave', () => { hover = false; pos = gallery.scrollLeft; });
+  window.addEventListener('pointerup', () => { pos = gallery.scrollLeft; hold = performance.now() + 2500; });
+  if ('IntersectionObserver' in window) new IntersectionObserver((en) => { visible = en[0].isIntersecting; }, { threshold: 0.2 }).observe(gallery);
+  const drift = (t) => {
+    if (last && visible && !hover && !down && !busy && t > hold) {
+      const max = gallery.scrollWidth - gallery.clientWidth;
+      if (Math.abs(gallery.scrollLeft - pos) > 3) pos = gallery.scrollLeft; // la persona la movió
+      pos += dir * SPEED * Math.min(0.1, (t - last) / 1000);
+      if (pos >= max) { pos = max; dir = -1; hold = t + 2500; }
+      if (pos <= 0) { pos = 0; dir = 1; hold = t + 2500; }
+      gallery.scrollLeft = pos;
+    }
+    last = t;
+    requestAnimationFrame(drift);
+  };
+  if (!reduceMotion) requestAnimationFrame(drift);
 }
 
 // ===== Componentes del mosaico (Mis Stocks y Saldos Bci) =====
@@ -233,22 +241,45 @@ if (jScroll) {
 
   const glide = (to, ms = 900) => {
     const from = jScroll.scrollLeft, t0 = performance.now();
-    const step = (t) => { const k = Math.min(1, (t - t0) / ms); jScroll.scrollLeft = from + (to - from) * (1 - Math.pow(1 - k, 3)); if (k < 1) requestAnimationFrame(step); };
+    const step = (t) => { const k = Math.min(1, (t - t0) / ms), e = k < .5 ? 8 * k ** 4 : 1 - Math.pow(-2 * k + 2, 4) / 2; jScroll.scrollLeft = from + (to - from) * e; if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   };
   document.querySelectorAll('.j-arrows button').forEach((btn) => btn.addEventListener('click', () => {
-    glide(jScroll.scrollLeft + Number(btn.dataset.dir) * Math.min(420, jScroll.clientWidth * 0.8), 600);
+    glide(jScroll.scrollLeft + Number(btn.dataset.dir) * Math.min(420, jScroll.clientWidth * 0.8), 1100);
   }));
   jScroll.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); glide(jScroll.scrollLeft + (e.key === 'ArrowRight' ? 380 : -380), 450); }
   });
-  // La primera vez que aparece recorre la línea de tiempo hasta hoy (Front), como en un viaje
+  // Las dos etapas más recientes (Friends of Figma y Front) se ven enteras; las anteriores quedan suaves
+  // y se encienden al pasar el mouse, al hacer clic o con el teclado.
+  const groups = [...jScroll.querySelectorAll('.j-group')];
+  const keep = groups.filter((g) => !g.classList.contains('j-empty')).slice(-2);
+  groups.forEach((g) => {
+    if (!keep.includes(g)) g.classList.add('j-dim');
+    g.addEventListener('click', () => { if (moved <= 4) g.classList.add('j-seen'); });
+  });
+  // La primera vez que aparece, la línea de tiempo se arma desde la izquierda y el recorrido termina en hoy
   if (!reduceMotion && 'IntersectionObserver' in window) {
+    jScroll.classList.add('j-build');
+    const STEP = 320;
     const io = new IntersectionObserver((entries) => {
-      if (entries.some((en) => en.isIntersecting)) { io.disconnect(); setTimeout(() => glide(jScroll.scrollWidth - jScroll.clientWidth, 2200), 300); }
-    }, { threshold: 0.45 });
+      if (!entries.some((en) => en.isIntersecting)) return;
+      io.disconnect();
+      // La vista queda fija en su posición final (termina en Front) y no se desplaza.
+      // Las etapas que se ven aparecen una a una de izquierda a derecha; las que quedan fuera, al tiro.
+      jScroll.scrollLeft = jScroll.scrollWidth - jScroll.clientWidth;
+      const box = jScroll.getBoundingClientRect();
+      let k = 0;
+      groups.forEach((g) => {
+        const r = g.getBoundingClientRect();
+        if (r.right <= box.left + 8 || r.left >= box.right) { g.classList.add("in"); return; }
+        setTimeout(() => g.classList.add("in"), 200 + k * STEP);
+        k += 1;
+      });
+      setTimeout(() => jScroll.classList.remove("j-build"), 200 + k * STEP + 800);
+    }, { threshold: 0.35 });
     io.observe(jScroll);
-  }
+  } else groups.forEach((g) => g.classList.add('in'));
 }
 
 // ===== Slides del header de cada caso: si hay más de uno, rotan solos =====
@@ -390,3 +421,19 @@ document.querySelectorAll('.fp').forEach((fp) => {
   // Al cambiar de idioma, el texto del paso actual se actualiza
   document.querySelectorAll('.lang-toggle').forEach((b) => b.addEventListener('click', () => setTimeout(() => { if (cur >= 0 && capbox) capbox.innerHTML = `<b>${cur + 1}/${shots.length}</b>` + steps[cur].querySelector('.fp-cap').innerHTML; }, 0)));
 });
+
+// ===== Entrada del titular del home: palabra por palabra (después de aplicar el idioma) =====
+// Al terminar se deja el texto como estaba, así el botón de idioma lo sigue traduciendo.
+(() => {
+  const root = document.documentElement, h1 = document.querySelector('.hero h1');
+  if (!root.classList.contains('intro')) return;
+  if (h1) {
+    const original = h1.innerHTML;
+    let i = 0;
+    h1.innerHTML = original.split(/(\s+)/).map((part) => (/^\s+$/.test(part) || !part ? part : `<span class="w" style="--i:${i++}">${part}</span>`)).join('');
+    // El título ya quedó en su color final: sin volver a correr la animación de color al terminar
+    h1.style.animation = 'none'; h1.style.color = 'var(--text)';
+    setTimeout(() => { if (h1.querySelector('.w')) h1.innerHTML = original; }, 3200);
+  }
+  setTimeout(() => root.classList.remove('intro'), 3400);
+})();
